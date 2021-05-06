@@ -1,3 +1,15 @@
+/*
+Copyright 2021 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 const injectInitializeCard = require("../lib/injectInitializeCard");
 const expectError = require("./helpers/expectError");
 
@@ -18,30 +30,35 @@ describe("initializeCard", () => {
       "fetchProjectId",
       "fetchColumnIdByName",
       "createIssueCard",
-      "getPackageVersion"
+      "getPackageVersion",
     ]);
-    githubFacade.createIssue.and.returnValue("myissueid");
-    githubFacade.fetchProjectId.and.returnValue("myprojectid");
-    githubFacade.fetchColumnIdByName.and.returnValue("mycolumnid");
+    githubFacade.createIssue.and.returnValue(Promise.resolve("myissueid"));
+    githubFacade.fetchProjectId.and.returnValue(Promise.resolve("myprojectid"));
+    githubFacade.fetchColumnIdByName.and.returnValue(
+      Promise.resolve("mycolumnid")
+    );
 
     core = jasmine.createSpyObj("core", ["info"]);
   });
 
   const build = () => {
-    githubFacade.getPackageVersion.and.returnValue(packageVersion);
+    githubFacade.getPackageVersion.and.returnValue(
+      Promise.resolve(packageVersion)
+    );
     initializeCard = injectInitializeCard({
       githubFacade,
       projectNumber,
       core,
       releaseType,
-      ref
+      ref,
     });
-  }
+  };
 
   it("checks for invalid release types", async () => {
     releaseType = "prerelease";
     build();
-    expectError(initializeCard,
+    expectError(
+      initializeCard,
       "`releaseType` must be major, minor, or patch."
     );
   });
@@ -50,7 +67,8 @@ describe("initializeCard", () => {
     packageVersion = "1.2.3-alpha.1";
     releaseType = "minor";
     build();
-    expectError(initializeCard,
+    expectError(
+      initializeCard,
       "Package.json should contain a version with no prerelease qualifiers, got 1.2.3-alpha.1"
     );
   });
@@ -62,7 +80,7 @@ describe("initializeCard", () => {
     expect(githubFacade.createIssue).toHaveBeenCalledOnceWith({
       title: "2.0.0",
       body: jasmine.anything(),
-      labels: ["release","branch:mybranch"]
+      labels: ["release", "branch:mybranch"],
     });
   });
 
@@ -73,7 +91,7 @@ describe("initializeCard", () => {
     expect(githubFacade.createIssue).toHaveBeenCalledOnceWith({
       title: "1.3.0",
       body: jasmine.anything(),
-      labels: ["release","branch:mybranch"]
+      labels: ["release", "branch:mybranch"],
     });
   });
 
@@ -84,7 +102,7 @@ describe("initializeCard", () => {
     expect(githubFacade.createIssue).toHaveBeenCalledOnceWith({
       title: "1.2.4",
       body: jasmine.anything(),
-      labels: ["release","branch:mybranch"]
+      labels: ["release", "branch:mybranch"],
     });
   });
 
@@ -92,7 +110,10 @@ describe("initializeCard", () => {
     releaseType = "major";
     build();
     await initializeCard();
-    expect(githubFacade.createIssueCard).toHaveBeenCalledOnceWith("mycolumnid", "myissueid");
+    expect(githubFacade.createIssueCard).toHaveBeenCalledOnceWith(
+      "mycolumnid",
+      "myissueid"
+    );
   });
 
   it("logs a message", async () => {
@@ -106,6 +127,8 @@ describe("initializeCard", () => {
     releaseType = "major";
     build();
     await initializeCard();
-    expect(githubFacade.getPackageVersion).toHaveBeenCalledOnceWith("refs/heads/mybranch");
-  })
+    expect(githubFacade.getPackageVersion).toHaveBeenCalledOnceWith(
+      "refs/heads/mybranch"
+    );
+  });
 });
