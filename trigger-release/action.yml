@@ -1,0 +1,15 @@
+name: 'Trigger a Release'
+description: 'Trigger a release based on a card move or a push.'
+inputs:
+  workflowId:
+    required: true
+    description: 'The file name of the workflow to run.'
+  token:
+    required: true
+    description: 'Github token to use to trigger the release. (This must be a different token than the default github-actions token.)'
+  projectNumber:
+    required: true
+    description: 'The project that should trigger releases'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

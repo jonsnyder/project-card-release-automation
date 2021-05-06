@@ -1,0 +1,15 @@
+name: 'Initialize Project Card Release'
+description: 'Create a project card with a release version.'
+inputs:
+  releaseType:
+    description: 'The semantic version release type (major, minor, or patch)'
+    required: true
+  projectNumber:
+    description: 'The project where the card should be added'
+    required: true
+  token:
+    description: 'The github token to use'
+    required: true
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

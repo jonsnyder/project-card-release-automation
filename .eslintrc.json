@@ -1,11 +1,9 @@
 {
     "env": {
-        "commonjs": true,
-        "es6": true,
-        "jest": true,
+        "jasmine": true,
         "node": true
     },
-    "extends": "eslint:recommended",
+    "extends": ["airbnb-base", "prettier"],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
@@ -13,6 +11,27 @@
     "parserOptions": {
         "ecmaVersion": 2018
     },
+    "plugins": [
+        "license-header",
+        "ban",
+        "prettier"
+    ],
     "rules": {
+        "license-header/header": [
+            "error",
+            "./license-header"
+        ],
+        "ban/ban": [
+            "error",
+            { "name": ["describe", "only"], "message": "don't focus tests" },
+            { "name": "fdescribe", "message": "don't focus tests" },
+            { "name": ["it", "only"], "message": "don't focus tests" },
+            { "name": "fit", "message": "don't focus tests" }
+        ],
+        "prettier/prettier": "error",
+        "no-param-reassign": ["error", { "props": false }],
+        "func-style": "error",
+        "no-restricted-syntax": ["off", "ForOfStatement"],
+        "no-await-in-loop": ["off"]
     }
 }
